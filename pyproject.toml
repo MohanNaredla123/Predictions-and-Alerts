@@ -3,7 +3,7 @@ requires = ["flit_core >=3.2,<4"]
 build-backend = "flit_core.buildapi"
 
 [project]
-name = "Model Training"
+name = "CAD"
 version = "0.0.1"
 description = "Entire Data processing and model training of attendance data"
 authors = [
@@ -17,6 +17,7 @@ classifiers = [
 ]
 dependencies = [
     "fastparquet>=2024.11.0",
+    "ipykernel>=6.29.5",
     "joblib>=1.5.1",
     "lightgbm>=4.6.0",
     "loguru",
