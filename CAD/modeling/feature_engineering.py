@@ -48,7 +48,7 @@ class FeatureEngineering:
     
 
     def run(self) -> None:
-        wide_path = self.cfg.INTERIM_DATA_DIR / "TrainLong.csv"
+        wide_path = self.cfg.INTERIM_DATA_DIR / "TrainWide.csv"
         wide_df = pd.read_csv(wide_path)
 
         final_df = self._build_features(wide_df)

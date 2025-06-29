@@ -15,7 +15,7 @@ class Predictor:
         model = joblib.load(self.cfg.MODELS_DIR / "lgbm_regressor.pkl")
         df_wide = pd.read_parquet(self.cfg.PROCESSED_DATA_DIR / "FinalTrainingData.parquet")
         rolling_df = pd.read_csv(self.cfg.INTERIM_DATA_DIR / "RollingAvgStudents.csv")
-        original_df = pd.read_csv(self.cfg.INTERIM_DATA_DIR / "Merged_Data.csv")
+        original_df = pd.read_csv(self.cfg.INTERIM_DATA_DIR / "TrainLong.csv")
 
         feature_names = model.feature_name_
         df_pred = df_wide.copy()
@@ -80,11 +80,10 @@ class Predictor:
         df_long["Predictions_School"] = df_long.groupby(["LOCATION_ID", "SCHOOL_YEAR"])["Predictions"].transform("mean")
         df_long["Predictions_Grade"] = df_long.groupby(["STUDENT_GRADE_LEVEL", "SCHOOL_YEAR"])["Predictions"].transform("mean")
         df_long = df_long.sort_values(by=['STUDENT_ID', 'SCHOOL_YEAR'])
-        df_long['SCHOOL_YEAR'] = df_long['SCHOOL_YEAR'].str[:4]
-        df_long['SCHOOL_YEAR'] = df_long['SCHOOL_YEAR'].fillna(2025).astype('int')
+        print(df_long.info())
 
-        out_path = self.cfg.PROCESSED_DATA_DIR / "Predictions.csv"
-        df_long.to_csv(out_path, index=False)
+        out_path = self.cfg.PROCESSED_DATA_DIR / "Predictions.parquet"
+        df_long.to_parquet(out_path, index=False)
         print(f"Predictions written → {out_path}")
 
 
