@@ -159,14 +159,17 @@ class Predictor:
         df_long.to_parquet(out_path, index=False)
         print(f"Predictions written → {out_path}")
 
-
+        next_year = self.max_year + 1
         pred_cols = ['Predictions', 'Predictions_District', 'Predictions_School', 'Predictions_Grade']
-        pred_df = df_long[df_long['SCHOOL_YEAR'] == 2025].loc[:, [*pred_cols, 'STUDENT_ID']]
 
-        hist_cols = [col for col in df_long.columns if col not in pred_cols]
-        hist_df = df_long[~(df_long['SCHOOL_YEAR'] == 2025)].loc[:, hist_cols]
+        df_long['SCHOOL_YEAR'] = pd.to_numeric(df_long['SCHOOL_YEAR'], errors='coerce')
 
-        alerts = pd.merge(left=hist_df, right=pred_df, on='STUDENT_ID', how='left')
+        pred_df = df_long[df_long['SCHOOL_YEAR'] == next_year][['STUDENT_ID', *pred_cols]]
+
+        hist_cols = [c for c in df_long.columns if c not in pred_cols]
+        hist_df  = df_long[df_long['SCHOOL_YEAR'] <= self.max_year][hist_cols]
+
+        alerts = hist_df.merge(pred_df, on='STUDENT_ID', how='left')
         alerts_out_path = self.cfg.PROCESSED_DATA_DIR / 'Alerts.parquet'
         alerts.to_parquet(alerts_out_path, index=False)
 

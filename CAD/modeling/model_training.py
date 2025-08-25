@@ -18,6 +18,7 @@ class ModelTraining:
         self.seed = 999
         self.tune = performParameterTuning
         self.data = pd.read_parquet(self.cfg.PROCESSED_DATA_DIR / "FinalTrainingData.parquet")
+        self.min_year, self.max_year = self.cfg.getMinMaxYear()
         
         yr_pat = re.compile(r"_(\d{4})$")
         self.static = [
@@ -46,9 +47,9 @@ class ModelTraining:
         else:
             best_params = self.cfg.getParameterValues()
 
-        feats = self.utils._features_up_to(year=2023, data=self.data, static=self.static)
+        feats = self.utils._features_up_to(year=self.max_year - 1, data=self.data, static=self.static)
         X = self.data[feats]
-        y = self.data["Attendance_Rate_2024"]
+        y = self.data[f"Attendance_Rate_{self.max_year}"]
 
         X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.2, random_state=self.seed)
         mdl = LGBMRegressor(**{**best_params, **{"objective": "regression", "metric": "rmse", "random_state": self.seed}})

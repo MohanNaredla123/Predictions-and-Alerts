@@ -16,7 +16,8 @@ class HyperparameterTuner:
         self.static = static_features
         self.seed = seed
         self.n_trials = n_trials
-        self.folds = [(2021, 2022), (2022, 2023), (2023, 2024)]
+        self.min_year, self.max_year = self.cfg.getMinMaxYear()
+        self.folds = [(self.max_year - 3, self.max_year - 2), (self.max_year - 2, self.max_year - 1), (self.max_year - 1, self.max_year)]
         self.params = self.cfg.getParameterValues()
 
 
